@@ -1,0 +1,41 @@
+eye 0 0 20
+viewdir 0 0 -1
+updir 0 1.0 0.0
+hfov 45.0
+imsize 500 500
+bkgcolor 1 1 1
+light -7 -3 7 1 1 1 1
+
+mtlcolor .1 .1 .1 1 1 1 0.3 0.3 0.6 100 .2 1.8
+sphere -2 -2 10 2
+
+mtlcolor .1 .1 .1 1 1 1 0.3 0.3 0.6 100 .2 1.8
+sphere 1 1 8 .5
+
+mtlcolor .1 .1 .1 1 1 1 0.3 0.3 0.6 100 .2 1.8
+sphere 0 0 10 .5
+
+mtlcolor 0 0 .5 1 1 1 .1 0.1 0.2 2 1 1.8
+texture texture.ppm
+v  -4 -4  -4
+v  -4  -4  4
+v  -4  4  -4
+v  -4  4  4
+v  4  -4  -4
+v  4  -4  4
+v  4  4  -4
+v  4  4  4
+vn  0  0  1.0
+vn  0  0 -1.0
+vn  0  1.0  0
+vn  0 -1.0  0
+vn  1.0  0  0
+vn -1.0  0  0
+vt 0 0
+vt 1 0
+vt 0 1
+vt 1 1
+
+
+f  2/2  6/4  8/3
+f  2/2  8/3  4/1
