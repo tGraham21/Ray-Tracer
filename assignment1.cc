@@ -375,7 +375,7 @@ Color traceRay(Ray ray, int count, float eta_I){
   int min_index = -1;
   double b, c;
   double pos_point, neg_point;
-  Point inter_point = Point();
+  Point inter_point;
   Sphere inter_sphere = Sphere();
   Face inter_face = Face();
   float alpha, beta, gamma;
@@ -387,8 +387,7 @@ Color traceRay(Ray ray, int count, float eta_I){
   col.ka = .3; col.kd = .5; col.ks = .2;
   col.n = 2; col.alpha = 1; col.eta = 1;
   
-  Point rOrigin = Point();
-  rOrigin.x = ray.x; rOrigin.y = ray.y; rOrigin.z =ray.z;
+  Point rOrigin(ray.x, ray.y, ray.z);
 
   for(int i = 0; i< (int)spheres.size(); i++){ 
     // check spheres for intersection
@@ -433,16 +432,14 @@ Color traceRay(Ray ray, int count, float eta_I){
     }
     
     if(min_index > -1){
-
-      Vector dir = Vector(); 
-      Point p = Point();
-      dir.x = ray.dx; dir.y = ray.dy; dir.z = ray.dz;
-      p.x = ray.x ;  p.y = ray.y ; p.z = ray.z ;
+      Vector dir(ray.dx, ray.dy, ray.dz); 
+      Point p (ray.x, ray.y, ray.z);
+ 
       // calculate intersection point 
       inter_point = add(mult(min_distance,dir), p);
 
-      Point center = Point();
-      center.x = inter_sphere.cx; center.y = inter_sphere.cy; center.z = inter_sphere.cz;
+      Point center = Point(inter_sphere.cx, inter_sphere.cy, inter_sphere.cz);
+      
       N = normalize(sub(inter_point,center));
       Vector E = normalize(sub(eye, inter_point));
 
@@ -491,11 +488,11 @@ Color traceRay(Ray ray, int count, float eta_I){
      
       
 	  // reflection and refraction calculations
-    if (count < 6){
+    if (count < 10){
       count ++;
       Vector refractN = N;
-      Vector iDir = normalize(sub(rOrigin, inter_point));
-      iDir.x = ray.dx * -1; iDir.y = ray.dy * -1; iDir.z = ray.dz * -1;  
+      Vector iDir(ray.dx * -1, ray.dy * -1, ray.dz * -1);
+     
 
       // Direction for R
       Vector rDirSphere = normalize(sub(mult(2 * max(0.0,dot(N,iDir)),N),iDir));
@@ -653,7 +650,7 @@ Color traceRay(Ray ray, int count, float eta_I){
       }
 
       // reflection and refraction calculations for faces
-      if (count < 6){
+      if (count < 10){
         count ++;
         Vector refractN = n;
         Vector iDir = normalize(sub(rOrigin, intersect));   
