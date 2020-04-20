@@ -470,10 +470,8 @@ Color traceRay(Ray ray, int count, float eta_I){
 
       for(int i = 0; i < (int)lights.size(); i++){
         int s = 1;
-        Ray shadow_ray = Ray();
-        shadow_ray.x = inter_point.x; shadow_ray.y = inter_point.y; shadow_ray.z = inter_point.z;
         Vector shadow_dir = L_list[i];
-        shadow_ray.dx = shadow_dir.x; shadow_ray.dy = shadow_dir.y; shadow_ray.dz = shadow_dir.z;
+        Ray shadow_ray = Ray(inter_point.x, inter_point.y, inter_point.z, shadow_dir.x, shadow_dir.y, shadow_dir.z );
         double dist = sqrt(pow(lights[i].x,2) + pow(lights[i].y,2) + pow(lights[i].z,2));
 
         if(traceShadowRay(shadow_ray,dist) == true){
@@ -501,9 +499,7 @@ Color traceRay(Ray ray, int count, float eta_I){
 
       // Direction for R
       Vector rDirSphere = normalize(sub(mult(2 * max(0.0,dot(N,iDir)),N),iDir));
-      Ray R = Ray();
-      R.x = inter_point.x  ; R.y = inter_point.y ; R.z = inter_point.z ;
-      R.dx = rDirSphere.x; R.dy = rDirSphere.y; R.dz = rDirSphere.z;
+      Ray R = Ray(inter_point.x, inter_point.y, inter_point.z, rDirSphere.x, rDirSphere.y, rDirSphere.z);
 
       // accumulated color of reflections
       Color reflectColor = traceRay(R, count, 1);
@@ -525,9 +521,7 @@ Color traceRay(Ray ray, int count, float eta_I){
 
       Vector negN = mult(-1, refractN);
       float eta_T = col.eta;
-      Ray T = Ray();
-      T.x = inter_point.x ; T.y = inter_point.y ; T.z = inter_point.z ; 
-      
+
       // calculations for refracted ray T
       float tFront = sqrt(1 - (pow((eta_I/eta_T), 2) * (1 - pow(dot(refractN,iDir),2))));
       Vector tValue1 = mult(tFront, negN);
@@ -535,7 +529,7 @@ Color traceRay(Ray ray, int count, float eta_I){
       tValue2 = mult((eta_I/eta_T), tValue2);
       Vector tDirSphere = add(tValue1, tValue2);
 
-      T.dx = tDirSphere.x; T.dy = tDirSphere.y; T.dz = tDirSphere.z;
+      Ray T = Ray(inter_point.x, inter_point.y, inter_point.z, tDirSphere.x, tDirSphere.y, tDirSphere.z);
       Color transparencyColor = traceRay(T, count, eta_T);
         
       pos_col.r += ((1 - fR) * (1 - col.alpha) * transparencyColor.r);
@@ -642,10 +636,8 @@ Color traceRay(Ray ray, int count, float eta_I){
       pos_col.b = (col.ka * col.odb);
       for(int i = 0; i < (int)lights.size(); i++){
         int s = 1;
-        Ray shadow_ray = Ray();
-        shadow_ray.x = intersect.x; shadow_ray.y = intersect.y; shadow_ray.z = intersect.z;
         Vector shadow_dir = L_list[i];
-        shadow_ray.dx = shadow_dir.x; shadow_ray.dy = shadow_dir.y; shadow_ray.dz = shadow_dir.z;
+        Ray shadow_ray = Ray(inter_point.x, inter_point.y, inter_point.z, shadow_dir.x, shadow_dir.y, shadow_dir.z );
         double dist = sqrt(pow(lights[i].x,2) + pow(lights[i].y,2) + pow(lights[i].z,2));
 
         if(traceShadowRay(shadow_ray,dist) == true){
@@ -668,9 +660,7 @@ Color traceRay(Ray ray, int count, float eta_I){
 
         // calculate direction of R vector
         Vector rDirFace = normalize(sub(mult(2 * max(0.0,dot(n,iDir)),n),iDir));
-        Ray R = Ray();
-        R.x = intersect.x; R.y = intersect.y; R.z = intersect.z;
-        R.dx = rDirFace.x; R.dy = rDirFace.y; R.dz = rDirFace.z;
+        Ray R = Ray(intersect.x, intersect.y, intersect.z, rDirFace.x, rDirFace.y, rDirFace.z);
         
         // accumulation of reflected color
         Color reflectColor = traceRay(R, count, 1);
@@ -694,14 +684,16 @@ Color traceRay(Ray ray, int count, float eta_I){
         // calculations for refraction ray T
         Vector negN = mult(-1, refractN);
         float eta_T = col.eta;
-        Ray T = Ray();
-        T.x = intersect.x + .001 ; T.y = intersect.y + .001; T.z = intersect.z + .001; 
+      
         float tFront = sqrt(1 - (pow((eta_I/eta_T), 2) * (1 - pow(dot(refractN,iDir),2))));
         Vector tValue1 = mult(tFront, negN);
         Vector tValue2  = sub(mult(dot(refractN,iDir),refractN),iDir);
         tValue2 = mult((eta_I/eta_T), tValue2);
         Vector tDirFace = add(tValue1, tValue2);
-        T.dx = tDirFace.x; T.dy = tDirFace.y; T.dz = tDirFace.z;
+        Ray T = Ray(inter_point.x, inter_point.y, inter_point.z, tDirFace.x, tDirFace.y, tDirFace.z);
+        
+        // shift slightly to avoid ray collisions and spotted appearance
+        T.x = intersect.x + .001 ; T.y = intersect.y + .001; T.z = intersect.z + .001; 
         Color transparencyColor = traceRay(T, count, eta_T);
         
         pos_col.r += ((1 - fR) * (1 - col.alpha) * transparencyColor.r);
@@ -817,14 +809,11 @@ int main (int argc, char **argv){
     for(int i = 0; i < width; i++){
       // create ray through pixel
       Point ray_point = add(add(add(add(mult(i,h_offset),mult(j,v_offset)), ch_offset), cv_offset)  ,ul);
-      Ray ray = Ray();
+     
       // eye is origin
-      ray.x = eye.x; ray.y = eye.y; ray.z =eye.z;
-
       Vector norm_dir = Vector();
       norm_dir = normalize(sub(ray_point, eye));
-
-      ray.dx = norm_dir.x; ray.dy = norm_dir.y; ray.dz = norm_dir.z;
+      Ray ray = Ray(eye.x, eye.y, eye.z, norm_dir.x, norm_dir.y, norm_dir.z);
       
       pixels[i][j] = traceRay(ray, 0, 1);
     }

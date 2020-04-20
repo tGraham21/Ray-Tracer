@@ -1,20 +1,30 @@
 // a1_struct.h - 5607
 // Definitions of all the data structures used in assignment1.cc
-typedef struct{
+ struct Point{
   double x, y, z;
-}Point;
+  Point(double xVal = 0, double yVal = 0, double zVal = 0){
+    x = xVal;
+    y = yVal;
+    z = zVal;
+  }
+};
 
-typedef struct{
+struct Vector{
   double x,y,z;
-}Vector;
+  Vector(double xVal = 0, double yVal = 0, double zVal = 0){
+    x = xVal;
+    y = yVal;
+    z = zVal;
+  }
+};
 
-typedef struct{
+typedef struct {
   double cx, cy, cz;
   double radius;
   int mat_index;
   int flag; // 1 - text
   int text_index;
-} Sphere;
+}Sphere;
 
 typedef struct{
   double cx, cy, cz;
@@ -26,6 +36,7 @@ typedef struct{
 
 typedef struct {
   double r,g,b;
+  
 }Color;
 
 typedef struct{
@@ -41,10 +52,14 @@ typedef struct{
   double r,g,b;
 }Light;
 
-typedef struct{
+struct Ray{
   double x, y, z;
   double dx, dy, dz;
-} Ray;
+  Ray(double xVal, double yVal, double zVal, double dirX, double dirY, double dirZ){
+    x = xVal; y = yVal; z = zVal;
+    dx = dirX; dy = dirY; dz = dirZ;
+  }
+};
 
 typedef struct{
   Point v1, v2, v3 ;
